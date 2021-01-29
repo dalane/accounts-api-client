@@ -1,8 +1,8 @@
-import { defaults, servers as ApiServers, RequestOpts, HttpError,verify_user_email_dto, listProducts, findProductById, listOrganisations, addOrganisation, addPaymentMethod, addProductSubscription, addBillingAddress, listCountries, findCountryByIsoCode, getUserProfile, findOrganisationById, changeUserPassword, createCheckoutSession, findCheckoutSession, findServiceById, listServices, metadata_object, organisation_entity, service_entity, create_stripe_checkout_session_dto, add_product_subscription_dto, add_payment_method_dto, add_billing_address_dto, add_organisation_dto, product_entity, change_user_password_dto, user_entity, country_entity, billing_portal_session_entity, createBillingPortalSession, CreateBillingPortalSessionDto, authenticate_user_dto, create_user_dto, authenticate_client_dto, client_entity, getClientProfile, authenticateClient, createUser, verifyUserEmail, authenticateUser } from './client';
+import { defaults, servers as ApiServers, RequestOpts, HttpError,verify_user_email_dto, listProducts, findProductById, listOrganisations, addOrganisation, addProductSubscription, addBillingAddress, listCountries, findCountryByIsoCode, getUserProfile, findOrganisationById, changeUserPassword, createCheckoutSession, findCheckoutSession, findServiceById, listServices, metadata_object, organisation_entity, service_entity, create_stripe_checkout_session_dto, add_product_subscription_dto, add_billing_address_dto, add_organisation_dto, product_entity, change_user_password_dto, user_entity, country_entity, billing_portal_session_entity, createBillingPortalSession, CreateBillingPortalSessionDto, authenticate_user_dto, create_user_dto, authenticate_client_dto, client_entity, getClientProfile, authenticateClient, createUser, verifyUserEmail, authenticateUser } from './client';
 import Debug from 'debug';
-import { HTTP_STATUS_CODES } from "./constants";
-import { DomainAttributeError, DomainServiceUnavailableError, ErrorObject, SerializedErrorPayload, deserializeErrorObject, createDomainValidationError, createDomainInternalServerError } from "./errors";
-import CircuitBreaker from "opossum";
+import { HTTP_STATUS_CODES } from './constants';
+import { DomainAttributeError, DomainServiceUnavailableError, ErrorObject, SerializedErrorPayload, deserializeErrorObject, createDomainValidationError, createDomainInternalServerError } from './errors';
+import CircuitBreaker from 'opossum';
 import { getFetch } from './fetch';
 
 const debug = Debug('app:services:accounts-api');

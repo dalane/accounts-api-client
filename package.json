@@ -1,14 +1,28 @@
 {
   "name": "@dalane/accounts-api-client",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
+  "files": [
+    "build",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dalane/accounts-api-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dalane/accounts-api-client/issues"
+  },
+  "homepage": "https://github.com/dalane/accounts-api-client/README.md",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "pretest": "npm run build",
+    "test": "nyc mocha",
     "prepare": "npm run build",
     "prebuild": "rm -rf ./build",
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint \"./src/**/*.ts\""
   },
   "author": "",
   "license": "ISC",
@@ -18,9 +32,13 @@
     "@types/node-fetch": "^2.5.8",
     "@types/opossum": "^4.1.1",
     "debug": "^4.3.1",
+    "eslint": "^7.19.0",
+    "mocha": "^8.2.1",
+    "nyc": "^15.1.0",
     "typescript": "^4.1.3"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.14.1",
     "node-fetch": "^2.6.1",
     "opossum": "^5.1.3"
   }
