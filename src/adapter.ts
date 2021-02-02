@@ -35,7 +35,7 @@ export interface AuthenticateClientDto extends authenticate_client_dto {}
 
 export interface ClientEntity extends client_entity {};
 
-export { CreateBillingPortalSessionDto };
+export { CreateBillingPortalSessionDto, CreateClientDto };
 
 export interface SessionEntity {
 	session_id: string;
