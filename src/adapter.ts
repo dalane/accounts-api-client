@@ -44,48 +44,45 @@ export interface SessionEntity {
 export interface ServiceEntity extends service_entity {}
 
 export interface AccountsApiService {
-	config: {
-		setToken: (token: string) => void;
-	};
 	client: {
-		getClientProfile: (client_id: string) => Promise<ClientEntity | Error>;
-		authenticateClient: (params: AuthenticateClientDto) => Promise<ClientEntity | Error>;
-		createClient: (params: CreateClientDto) => Promise<ClientEntity | Error>;
+		getClientProfile: (token: string, client_id: string) => Promise<ClientEntity | Error>;
+		authenticateClient: (token: string, params: AuthenticateClientDto) => Promise<ClientEntity | Error>;
+		createClient: (token: string, params: CreateClientDto) => Promise<ClientEntity | Error>;
 	};
 	users: {
-		create: (dto: CreateNewUserDto) => Promise<UserEntity | Error>;
-		verifyEmail: (dto: VerifyUserEmailDto) => Promise<UserEntity | Error>;
-		findById: (userId:string) => Promise<UserEntity | Error>;
-		changePassword: (userId:string, dto: ChangeUserPasswordDto) => Promise<UserEntity | Error>;
-		authenticate: (dto: AuthenticateUserDto) => Promise<UserEntity | Error>;
+		create: (token: string, dto: CreateNewUserDto) => Promise<UserEntity | Error>;
+		verifyEmail: (token: string, dto: VerifyUserEmailDto) => Promise<UserEntity | Error>;
+		findById: (token: string, userId:string) => Promise<UserEntity | Error>;
+		changePassword: (token: string, userId:string, dto: ChangeUserPasswordDto) => Promise<UserEntity | Error>;
+		authenticate: (token: string, dto: AuthenticateUserDto) => Promise<UserEntity | Error>;
 	};
 	countries: {
-		list: () => Promise<CollectionResponse<CountryEntity>|Error>;
-		findByIsoCode: (isoCode:string) => Promise<CountryEntity|Error>;
+		list: (token: string, ) => Promise<CollectionResponse<CountryEntity>|Error>;
+		findByIsoCode: (token: string, isoCode:string) => Promise<CountryEntity|Error>;
 	};
 	products: {
-		list: (params?: CollectionParams) => Promise<ProductEntity[]|Error>;
-		findById: (product_id:string) => Promise<ProductEntity|Error>;
+		list: (token: string, params?: CollectionParams) => Promise<ProductEntity[]|Error>;
+		findById: (token: string, product_id:string) => Promise<ProductEntity|Error>;
 	};
 	organisations: {
-		addBillingAddress: (organisation_id: string, dto: add_billing_address_dto) => Promise<OrganisationEntity | Error>;
-		findById: (organisation_id:string) => Promise<OrganisationEntity | Error>;
-		list: ( params?: CollectionParams & IncludeOwnerParam & FilterByOwnerParam ) => Promise<CollectionResponse<OrganisationEntity>|Error>;
-		create: (dto:AddOrganisationDto) => Promise<OrganisationEntity | Error>;
+		addBillingAddress: (token: string, organisation_id: string, dto: add_billing_address_dto) => Promise<OrganisationEntity | Error>;
+		findById: (token: string, organisation_id:string) => Promise<OrganisationEntity | Error>;
+		list: (token: string,  params?: CollectionParams & IncludeOwnerParam & FilterByOwnerParam ) => Promise<CollectionResponse<OrganisationEntity>|Error>;
+		create: (token: string, dto:AddOrganisationDto) => Promise<OrganisationEntity | Error>;
 		/**
 		 * Add a subscription to the organisation after receiving confirmation of a
 		 * successful  payment from stripe checkout.
 		 */
-		addSubscription: (organisationId:string, dto:AddProductSubscriptionDto) => Promise<OrganisationEntity|Error>;
-		createBillingPortalSession: (organisation_id: string, dto: CreateBillingPortalSessionDto) => Promise<BillingPortalSessionEntity | Error>;
+		addSubscription: (token: string, organisationId:string, dto:AddProductSubscriptionDto) => Promise<OrganisationEntity|Error>;
+		createBillingPortalSession: (token: string, organisation_id: string, dto: CreateBillingPortalSessionDto) => Promise<BillingPortalSessionEntity | Error>;
 	};
 	checkoutSessions: {
-		findById: (session_id:string) => Promise<any|Error>;
-		create: (dto:CreateCheckoutSessionDto) => Promise<SessionEntity|Error>;
+		findById: (token: string, session_id:string) => Promise<any|Error>;
+		create: (token: string, dto:CreateCheckoutSessionDto) => Promise<SessionEntity|Error>;
 	};
 	services: {
-		list: (params?: CollectionParams) => Promise< CollectionResponse<ServiceEntity> | Error >;
-		findById: (service_id: string) => Promise< ServiceEntity | Error >;
+		list: (token: string, params?: CollectionParams) => Promise< CollectionResponse<ServiceEntity> | Error >;
+		findById: (token: string, service_id: string) => Promise< ServiceEntity | Error >;
 	};
 }
 
@@ -128,8 +125,6 @@ export interface ApiClientSettings {
 }
 
 export function makeAccountsApiService(settings: ApiClientSettings):AccountsApiService {
-
-	let token: string | undefined;
 
 	const { baseUrl, fetch } = settings;
 
@@ -186,46 +181,41 @@ export function makeAccountsApiService(settings: ApiClientSettings):AccountsApiS
 	const addBillingAddressHandler = makeHandler(addBillingAddress);
 
 	return {
-		config: {
-			setToken: (value: string) => {
-				token = value;
-			}
-		},
 		client: {
-			getClientProfile: async (client_id: string) => await findClientByIdHandler(client_id, createApiRequestOpts(token)),
-			authenticateClient: async (params: AuthenticateClientDto) => await authenticateClientHandler(params, createApiRequestOpts(token)),
-			createClient: async (dto: CreateClientDto) => await createClientHandler(dto, createApiRequestOpts(token))
+			getClientProfile: async (token: string, client_id: string) => await findClientByIdHandler(client_id, createApiRequestOpts(token)),
+			authenticateClient: async (token: string, params: AuthenticateClientDto) => await authenticateClientHandler(params, createApiRequestOpts(token)),
+			createClient: async (token: string, dto: CreateClientDto) => await createClientHandler(dto, createApiRequestOpts(token))
 		},
 		users: {
-			create: async (dto: CreateNewUserDto) => await createUserHandler(dto, createApiRequestOpts(token)),
-			verifyEmail: async (dto: VerifyUserEmailDto) => await verifyEmailHandler(dto, createApiRequestOpts(token)),
-			findById: async (userId:string) => await findUserByIdHandler(userId, createApiRequestOpts(token)),
-			changePassword: async (userId:string, dto:ChangeUserPasswordDto) => await changePasswordHandler(userId, dto, createApiRequestOpts(token)),
-			authenticate: async (dto: AuthenticateUserDto) => await authenticateUserHandler(dto, createApiRequestOpts(token)),
+			create: async (token: string, dto: CreateNewUserDto) => await createUserHandler(dto, createApiRequestOpts(token)),
+			verifyEmail: async (token: string, dto: VerifyUserEmailDto) => await verifyEmailHandler(dto, createApiRequestOpts(token)),
+			findById: async (token: string, userId:string) => await findUserByIdHandler(userId, createApiRequestOpts(token)),
+			changePassword: async (token: string, userId:string, dto:ChangeUserPasswordDto) => await changePasswordHandler(userId, dto, createApiRequestOpts(token)),
+			authenticate: async (token: string, dto: AuthenticateUserDto) => await authenticateUserHandler(dto, createApiRequestOpts(token)),
 		},
 		countries: {
-			list: async (params?: CollectionParams) => listCountriesHandler(params, createApiRequestOpts(token)),
-			findByIsoCode: async (isoCode:string) => findCountryHandler(isoCode, createApiRequestOpts(token))
+			list: async (token: string, params?: CollectionParams) => listCountriesHandler(params, createApiRequestOpts(token)),
+			findByIsoCode: async (token: string, isoCode:string) => findCountryHandler(isoCode, createApiRequestOpts(token))
 		},
 		products: {
-			list: async (params?: CollectionParams) => listProductsHandler(params, createApiRequestOpts(token)),
-			findById: async (product_id:string) => findProductByIdHandler(product_id, createApiRequestOpts(token)),
+			list: async (token: string, params?: CollectionParams) => listProductsHandler(params, createApiRequestOpts(token)),
+			findById: async (token: string, product_id:string) => findProductByIdHandler(product_id, createApiRequestOpts(token)),
 		},
 		organisations: {
-			addBillingAddress: async (organisation_id: string, dto: add_billing_address_dto) => addBillingAddressHandler(organisation_id, dto, createApiRequestOpts(token)),
-			findById: async (organisationId:string, params?: IncludeOwnerParam) => findOrganisationHandler(organisationId, params, createApiRequestOpts(token)),
-			list: async (params?: CollectionParams & IncludeOwnerParam & FilterByOwnerParam) => listOrganisationsHandler(params, createApiRequestOpts(token)),
-			create: async (dto:AddOrganisationDto) => createOrganisationHandler(dto, createApiRequestOpts(token)),
-			addSubscription: async (organisationId:string, dto:AddProductSubscriptionDto) => addSubscriptionHandler(organisationId, dto, createApiRequestOpts(token)),
-			createBillingPortalSession: async (organisation_id: string, dto: CreateBillingPortalSessionDto) => createBillingPortalSessionHandler(organisation_id, dto, createApiRequestOpts(token))
+			addBillingAddress: async (token: string, organisation_id: string, dto: add_billing_address_dto) => addBillingAddressHandler(organisation_id, dto, createApiRequestOpts(token)),
+			findById: async (token: string, organisationId:string, params?: IncludeOwnerParam) => findOrganisationHandler(organisationId, params, createApiRequestOpts(token)),
+			list: async (token: string, params?: CollectionParams & IncludeOwnerParam & FilterByOwnerParam) => listOrganisationsHandler(params, createApiRequestOpts(token)),
+			create: async (token: string, dto:AddOrganisationDto) => createOrganisationHandler(dto, createApiRequestOpts(token)),
+			addSubscription: async (token: string, organisationId:string, dto:AddProductSubscriptionDto) => addSubscriptionHandler(organisationId, dto, createApiRequestOpts(token)),
+			createBillingPortalSession: async (token: string, organisation_id: string, dto: CreateBillingPortalSessionDto) => createBillingPortalSessionHandler(organisation_id, dto, createApiRequestOpts(token))
 		},
 		checkoutSessions: {
-			findById: async (session_id:string) => findCheckoutSessionHandler(session_id, createApiRequestOpts(token)),
-			create: async (dto:CreateCheckoutSessionDto) => createCheckoutSessionHandler(dto, createApiRequestOpts(token))
+			findById: async (token: string, session_id:string) => findCheckoutSessionHandler(session_id, createApiRequestOpts(token)),
+			create: async (token: string, dto:CreateCheckoutSessionDto) => createCheckoutSessionHandler(dto, createApiRequestOpts(token))
 		},
 		services: {
-			findById: async (service_id: string) => findServiceHandler(service_id, createApiRequestOpts(token)),
-			list: async (params?: CollectionParams) => listServicesHandler(params, createApiRequestOpts(token))
+			findById: async (token: string, service_id: string) => findServiceHandler(service_id, createApiRequestOpts(token)),
+			list: async (token: string, params?: CollectionParams) => listServicesHandler(params, createApiRequestOpts(token))
 		}
 	};
 
