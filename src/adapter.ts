@@ -1,4 +1,4 @@
-import { defaults, servers as ApiServers, RequestOpts, HttpError,verify_user_email_dto, listProducts, findProductById, listOrganisations, addOrganisation, addProductSubscription, addBillingAddress, listCountries, findCountryByIsoCode, getUserProfile, findOrganisationById, changeUserPassword, createCheckoutSession, findCheckoutSession, findServiceById, listServices, metadata_object, organisation_entity, service_entity, create_stripe_checkout_session_dto, add_product_subscription_dto, add_billing_address_dto, add_organisation_dto, product_entity, change_user_password_dto, user_entity, country_entity, billing_portal_session_entity, createBillingPortalSession, CreateBillingPortalSessionDto, authenticate_user_dto, create_user_dto, authenticate_client_dto, client_entity, getClientProfile, authenticateClient, createUser, verifyUserEmail, authenticateUser } from './client';
+import { defaults, servers as ApiServers, RequestOpts, HttpError, createClient, CreateClientDto, verify_user_email_dto, listProducts, findProductById, listOrganisations, addOrganisation, addProductSubscription, addBillingAddress, listCountries, findCountryByIsoCode, getUserProfile, findOrganisationById, changeUserPassword, createCheckoutSession, findCheckoutSession, findServiceById, listServices, metadata_object, organisation_entity, service_entity, create_stripe_checkout_session_dto, add_product_subscription_dto, add_billing_address_dto, add_organisation_dto, product_entity, change_user_password_dto, user_entity, country_entity, billing_portal_session_entity, createBillingPortalSession, CreateBillingPortalSessionDto, authenticate_user_dto, create_user_dto, authenticate_client_dto, client_entity, getClientProfile, authenticateClient, createUser, verifyUserEmail, authenticateUser } from './client';
 import Debug from 'debug';
 import { HTTP_STATUS_CODES } from './constants';
 import { DomainAttributeError, DomainServiceUnavailableError, ErrorObject, SerializedErrorPayload, deserializeErrorObject, createDomainValidationError, createDomainInternalServerError } from './errors';
@@ -50,6 +50,7 @@ export interface AccountsApiService {
 	client: {
 		getClientProfile: (client_id: string) => Promise<ClientEntity | Error>;
 		authenticateClient: (params: AuthenticateClientDto) => Promise<ClientEntity | Error>;
+		createClient: (params: CreateClientDto) => Promise<ClientEntity | Error>;
 	};
 	users: {
 		create: (dto: CreateNewUserDto) => Promise<UserEntity | Error>;
@@ -138,7 +139,7 @@ export function makeAccountsApiService(settings: ApiClientSettings):AccountsApiS
 		defaults.baseUrl = baseUrl;
 	}
 
-	defaults.credentials = "include";
+	defaults.credentials = 'include';
 	defaults.fetch = fetch ?? getFetch();
 
 	const circuitBreakerErrorHandler = makeCircuitBreakerErrorHandler();
@@ -153,6 +154,7 @@ export function makeAccountsApiService(settings: ApiClientSettings):AccountsApiS
 	// clients
 	const findClientByIdHandler = makeHandler(getClientProfile);
 	const authenticateClientHandler = makeHandler(authenticateClient);
+	const createClientHandler = makeHandler(createClient);
 
 	// users
 	const createUserHandler = makeHandler(createUser);
@@ -192,6 +194,7 @@ export function makeAccountsApiService(settings: ApiClientSettings):AccountsApiS
 		client: {
 			getClientProfile: async (client_id: string) => await findClientByIdHandler(client_id, createApiRequestOpts(token)),
 			authenticateClient: async (params: AuthenticateClientDto) => await authenticateClientHandler(params, createApiRequestOpts(token)),
+			createClient: async (dto: CreateClientDto) => await createClientHandler(dto, createApiRequestOpts(token))
 		},
 		users: {
 			create: async (dto: CreateNewUserDto) => await createUserHandler(dto, createApiRequestOpts(token)),

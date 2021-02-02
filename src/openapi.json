@@ -1,0 +1,2732 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "cloud.dalane.api.accounts",
+    "description": "An API for Dalane Cloud customer accounts.",
+    "version": "v1-alpha"
+  },
+  "servers": [
+    {
+      "url": "http://accounts.api.dalane.cloud/v1",
+      "description": "live"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "pagination_query_param": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "style": "deepObject",
+        "explode": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "description": "Specify the number of records to return in a page. The default is 100. 0 returns all records.",
+              "type": "number",
+              "minimum": 0,
+              "default": 100
+            },
+            "number": {
+              "type": "number",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        }
+      },
+      "invitation_id_path_param": {
+        "name": "invitation_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "invitation_include_param": {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "style": "pipeDelimited",
+        "explode": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "organisation",
+            "user"
+          ]
+        }
+      },
+      "user_id_path_param": {
+        "name": "user_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "user_member_include_param": {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "style": "pipeDelimited",
+        "explode": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "organisation"
+          ]
+        }
+      },
+      "organisation_id_path_param": {
+        "name": "organisation_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "organisation_include_param": {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "style": "pipeDelimited",
+        "explode": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "owner"
+          ]
+        }
+      },
+      "organisation_member_include_param": {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "style": "pipeDelimited",
+        "explode": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "organisation",
+            "user"
+          ]
+        }
+      },
+      "list_organisation_filter_param": {
+        "name": "filter",
+        "in": "query",
+        "required": false,
+        "style": "deepObject",
+        "explode": true,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "owner_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        }
+      },
+      "service_id_path_param": {
+        "name": "service_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "membership_id_path_param": {
+        "name": "membership_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "member_include_param": {
+        "name": "include",
+        "in": "query",
+        "required": false,
+        "style": "pipeDelimited",
+        "explode": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "organisation",
+            "user"
+          ]
+        }
+      },
+      "iso_country_code_path_param": {
+        "name": "iso_country_code",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "iso-country-code"
+        }
+      },
+      "product_id_path_param": {
+        "name": "product_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "client_id_path_param": {
+        "name": "client_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "stripe_session_id_path_param": {
+        "name": "stripe_session_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "schemas": {
+      "error_object": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "number"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "object",
+                  "properties": {
+                    "pointer": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "pointer"
+                  ]
+                },
+                "stack": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "status",
+                "code",
+                "title",
+                "detail"
+              ]
+            }
+          }
+        },
+        "required": [
+          "errors"
+        ]
+      },
+      "metadata_object": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "page": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "size": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "number",
+              "size"
+            ]
+          }
+        },
+        "required": [
+          "count",
+          "page"
+        ]
+      },
+      "organisation_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "organisation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "address": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "address_line_1": {
+                "type": "string"
+              },
+              "address_line_2": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string"
+              },
+              "postal_code": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "address_line_1",
+              "city",
+              "country_code"
+            ]
+          },
+          "tax_id": {
+            "type": "string"
+          },
+          "stripe_tax_id": {
+            "type": "string"
+          },
+          "payment_provider": {
+            "type": "string"
+          },
+          "payment_provider_ref": {
+            "type": "string"
+          },
+          "tax_status": {
+            "type": "string",
+            "enum": [
+              "none",
+              "exempt",
+              "reverse"
+            ]
+          },
+          "subscriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/subscription"
+            }
+          },
+          "payment_methods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/payment_method"
+            }
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/services"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "organisation_id",
+          "name",
+          "email",
+          "subscriptions",
+          "payment_methods",
+          "payment_provider",
+          "payment_provider_ref",
+          "services",
+          "created_at",
+          "updated_at",
+          "version"
+        ]
+      },
+      "add_organisation_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "address_line_1": {
+                "type": "string"
+              },
+              "address_line_2": {
+                "type": "string"
+              },
+              "city": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string"
+              },
+              "postal_code": {
+                "type": "string"
+              },
+              "country_code": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "address_line_1",
+              "city",
+              "country_code"
+            ]
+          },
+          "tax_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "add_billing_address_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address_line_1": {
+            "type": "string"
+          },
+          "address_line_2": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string",
+            "format": "iso-country-code"
+          }
+        },
+        "required": [
+          "address_line_1",
+          "city",
+          "country_code"
+        ]
+      },
+      "add_product_subscription_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "stripe_checkout_session_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "stripe_checkout_session_id"
+        ]
+      },
+      "add_vat_registration_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "vat_number": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vat_number"
+        ]
+      },
+      "add_payment_method_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "payment_provider": {
+            "type": "string",
+            "enum": [
+              "stripe"
+            ]
+          },
+          "payment_provider_ref": {
+            "type": "string"
+          },
+          "is_default": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "payment_provider",
+          "payment_provider_ref",
+          "is_default"
+        ]
+      },
+      "CreateBillingPortalSessionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "return_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "return_url"
+        ]
+      },
+      "billing_portal_session_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "portal_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "portal_url"
+        ]
+      },
+      "subscription": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "subscription_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "product_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "price_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stripe_subscription_id": {
+            "type": "string"
+          },
+          "current_period_end": {
+            "type": "number"
+          },
+          "current_period_start": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "canceled",
+              "incomplete",
+              "incomplete_expired",
+              "past_due",
+              "trialing",
+              "unpaid"
+            ]
+          },
+          "cancel_at": {
+            "type": "number"
+          },
+          "cancelled_at": {
+            "type": "number"
+          },
+          "collection_method": {
+            "type": "string"
+          },
+          "ended_at": {
+            "type": "number"
+          },
+          "trial_start_at": {
+            "type": "number"
+          },
+          "trial_end_at": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "subscription_id",
+          "product_id",
+          "price_id",
+          "stripe_subscription_id",
+          "current_period_end",
+          "current_period_start",
+          "status"
+        ]
+      },
+      "payment_card_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "brand": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "exp_month": {
+            "type": "number"
+          },
+          "exp_year": {
+            "type": "number"
+          },
+          "last4": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 4
+          },
+          "three_d_secure_usage": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "supported": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "supported"
+            ]
+          }
+        },
+        "required": [
+          "brand",
+          "exp_month",
+          "exp_year",
+          "last4"
+        ]
+      },
+      "payment_method": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "payment_method_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "stripe_payment_method_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "alipay",
+              "au_becs_debit",
+              "bacs_debit",
+              "bancontact",
+              "card",
+              "eps",
+              "fpx",
+              "giropay",
+              "ideal",
+              "p24",
+              "sepa_debit",
+              "sofort"
+            ]
+          },
+          "billing_details": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "address": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "line1": {
+                    "type": "string"
+                  },
+                  "line2": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "postal_code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "card": {
+            "$ref": "#/components/schemas/payment_card_entity"
+          },
+          "is_default": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "payment_method_id",
+          "stripe_payment_method_id",
+          "type",
+          "is_default"
+        ]
+      },
+      "services": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Provisioning",
+              "Ready",
+              "Failed",
+              "Disabled"
+            ]
+          }
+        },
+        "required": [
+          "service_id",
+          "status"
+        ]
+      },
+      "create_organisation_invitation_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Created",
+              "Sent",
+              "Accepted",
+              "Deleted",
+              "Undelivered"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "Administrator",
+              "Team Member",
+              "Billing Only"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "user_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "preferred_username": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "string",
+            "format": "uri"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "email_verified": {
+            "type": "boolean"
+          },
+          "zoneinfo": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "phone_number_verified": {
+            "type": "boolean"
+          },
+          "user_type": {
+            "type": "string",
+            "enum": [
+              "basic"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "user_id",
+          "preferred_username",
+          "name",
+          "email",
+          "email_verified",
+          "user_type",
+          "created_at",
+          "updated_at",
+          "version"
+        ]
+      },
+      "change_user_password_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "old_password": {
+            "type": "string"
+          },
+          "new_password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "old_password",
+          "new_password"
+        ]
+      },
+      "verify_user_email_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "code"
+        ]
+      },
+      "create_user_dto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password"
+        ]
+      },
+      "authenticate_user_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "ip_address": {
+            "description": "The client IP address is required to assist with protecting the account.",
+            "type": "string",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "ipv4"
+              },
+              {
+                "type": "string",
+                "format": "ipv6"
+              }
+            ]
+          },
+          "user_agent": {
+            "description": "The client user agent string is required to assist with protecting the account.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "ip_address",
+          "user_agent"
+        ]
+      },
+      "member_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "membership_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organisation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "Administrator",
+              "Team Member",
+              "Billing Only"
+            ]
+          },
+          "user": {
+            "$ref": "#/components/schemas/user_entity"
+          },
+          "organisation": {
+            "$ref": "#/components/schemas/organisation_entity"
+          }
+        },
+        "required": [
+          "membership_id",
+          "user_id",
+          "organisation_id",
+          "role"
+        ]
+      },
+      "change_member_role_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "Administrator",
+              "Team Member",
+              "Billing Only"
+            ]
+          }
+        },
+        "required": [
+          "role"
+        ]
+      },
+      "member_roles": {
+        "type": "string",
+        "enum": [
+          "Administrator",
+          "Team Member",
+          "Billing Only"
+        ]
+      },
+      "country_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "iso-country-code"
+          },
+          "name": {
+            "type": "string"
+          },
+          "dialingCode": {
+            "type": "string"
+          },
+          "isoCode": {
+            "type": "string"
+          },
+          "isEuMemberCountry": {
+            "type": "boolean"
+          },
+          "euCountryCode": {
+            "type": "string"
+          },
+          "vatRate": {
+            "type": "number",
+            "minimum": 0
+          },
+          "hasPostalCode": {
+            "type": "boolean"
+          },
+          "tax_rates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TaxRateEntity"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "dialingCode",
+          "isoCode",
+          "isEuMemberCountry",
+          "euCountryCode",
+          "vatRate",
+          "hasPostalCode"
+        ]
+      },
+      "TaxRateEntity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "stripe_tax_rate_id": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "description": {
+            "type": "string"
+          },
+          "display_name": {
+            "type": "string"
+          },
+          "inclusive": {
+            "type": "boolean"
+          },
+          "jurisdiction": {
+            "type": "string"
+          },
+          "percentage": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "stripe_tax_rate_id",
+          "active",
+          "display_name",
+          "inclusive",
+          "jurisdiction",
+          "percentage"
+        ]
+      },
+      "invitation_status": {
+        "type": "string",
+        "enum": [
+          "Created",
+          "Sent",
+          "Accepted",
+          "Deleted",
+          "Undelivered"
+        ]
+      },
+      "invitation_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "invitation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organisation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "Created",
+              "Sent",
+              "Accepted",
+              "Deleted",
+              "Undelivered"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "Administrator",
+              "Team Member",
+              "Billing Only"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "deleted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "invitation_id",
+          "organisation_id",
+          "status",
+          "role",
+          "created_at",
+          "updated_at",
+          "deleted_at",
+          "version"
+        ]
+      },
+      "create_invitation_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "organisation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "Administrator",
+              "Team Member",
+              "Billing Only"
+            ]
+          }
+        },
+        "required": [
+          "organisation_id",
+          "role"
+        ]
+      },
+      "product_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "product_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/price_entity"
+            }
+          },
+          "metadata": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "product_id",
+          "name",
+          "is_active",
+          "prices"
+        ]
+      },
+      "price_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "price_id": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "amount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "recurring": {
+            "type": "string",
+            "enum": [
+              "month",
+              "annual"
+            ]
+          },
+          "recurring_frequency": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "price_id",
+          "currency",
+          "amount",
+          "is_active",
+          "recurring",
+          "recurring_frequency"
+        ]
+      },
+      "client_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "is_public": {
+            "type": "boolean"
+          },
+          "redirect_uris": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "backchannel_logout_supported": {
+            "type": "boolean"
+          },
+          "backchannel_logout_uri": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "audiences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "client_type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organisation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "number",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "client_id",
+          "identifier",
+          "is_public",
+          "redirect_uris",
+          "backchannel_logout_supported",
+          "scopes",
+          "audiences",
+          "client_type",
+          "created_at",
+          "updated_at",
+          "version"
+        ]
+      },
+      "authenticate_client_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "secret": {
+            "type": "string",
+            "minLength": 32
+          },
+          "ip_address": {
+            "description": "The client IP address is required to assist with protecting the account.",
+            "type": "string",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "ipv4"
+              },
+              {
+                "type": "string",
+                "format": "ipv6"
+              }
+            ]
+          },
+          "user_agent": {
+            "description": "The client user agent string is required to assist with protecting the account.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "client_id",
+          "secret",
+          "ip_address",
+          "user_agent"
+        ]
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "is_public": {
+            "type": "boolean"
+          },
+          "redirect_uris": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "backchannel_logout_supported": {
+            "type": "boolean"
+          },
+          "backchannel_logout_uri": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "audiences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "client_type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "organisation_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "identifier",
+          "is_public",
+          "redirect_uris",
+          "backchannel_logout_supported",
+          "scopes",
+          "audiences",
+          "client_type"
+        ]
+      },
+      "service_entity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "service_id",
+          "name",
+          "created_at",
+          "updated_at",
+          "version"
+        ]
+      },
+      "create_service_dto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "session_entity": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id"
+        ]
+      },
+      "create_stripe_checkout_session_dto": {
+        "type": "object",
+        "properties": {
+          "organisation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "product_id": {
+            "type": "string"
+          },
+          "price_id": {
+            "type": "string"
+          },
+          "cancel_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "success_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "organisation_id",
+          "product_id",
+          "price_id",
+          "cancel_url",
+          "success_url"
+        ]
+      }
+    },
+    "responses": {
+      "validation_error_response": {
+        "description": "Validation Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/error_object"
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/users": {},
+    "/users/create": {
+      "post": {
+        "operationId": "CreateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/create_user_dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/validation_error_response"
+          }
+        }
+      }
+    },
+    "/users/authenticate": {
+      "post": {
+        "operationId": "AuthenticateUser",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/authenticate_user_dto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "operationId": "GetUserProfile",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/user_id_path_param"
+        }
+      ]
+    },
+    "/users/{user_id}/memberships": {
+      "get": {
+        "operationId": "ListUserMemberships",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/member_entity"
+                      }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/metadata_object"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/user_member_include_param"
+        },
+        {
+          "$ref": "#/components/parameters/user_id_path_param"
+        },
+        {
+          "$ref": "#/components/parameters/pagination_query_param"
+        }
+      ]
+    },
+    "/users/{user_id}/change-password": {
+      "post": {
+        "operationId": "ChangeUserPassword",
+        "responses": {
+          "200": {
+            "description": "Password Changed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user_entity"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/change_user_password_dto"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/user_id_path_param"
+        }
+      ]
+    },
+    "/users/verify-email": {
+      "post": {
+        "operationId": "VerifyUserEmail",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user_entity"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/verify_user_email_dto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services": {
+      "get": {
+        "operationId": "ListServices",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/service_entity"
+                      }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/metadata_object"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/pagination_query_param"
+        }
+      ]
+    },
+    "/services/add": {
+      "post": {
+        "operationId": "AddService",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/service_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "ValidationError",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/create_service_dto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/services/{service_id}": {
+      "get": {
+        "operationId": "FindServiceById",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/service_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/service_id_path_param"
+        }
+      ]
+    },
+    "/organisations": {
+      "get": {
+        "operationId": "ListOrganisations",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/organisation_entity"
+                      }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/metadata_object"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/organisation_include_param"
+          },
+          {
+            "$ref": "#/components/parameters/list_organisation_filter_param"
+          },
+          {
+            "$ref": "#/components/parameters/pagination_query_param"
+          }
+        ]
+      }
+    },
+    "/organisations/add": {
+      "post": {
+        "operationId": "AddOrganisation",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/add_organisation_dto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/organisations/{organisation_id}": {
+      "get": {
+        "operationId": "FindOrganisationById",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_include_param"
+        },
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/create-billing-portal-session": {
+      "post": {
+        "operationId": "CreateBillingPortalSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBillingPortalSessionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/billing_portal_session_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/invitations": {
+      "get": {
+        "operationId": "ListOrganisationInvitations",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/invitation_entity"
+                      }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/metadata_object"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        },
+        {
+          "$ref": "#/components/parameters/pagination_query_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/invitations/create": {
+      "post": {
+        "operationId": "CreateOrganisationInvitation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/create_organisation_invitation_dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invitation_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/members": {
+      "get": {
+        "operationId": "ListOrganisationMembers",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/member_entity"
+                      }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/metadata_object"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_member_include_param"
+        },
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        },
+        {
+          "$ref": "#/components/parameters/pagination_query_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/add-billing-address": {
+      "post": {
+        "operationId": "AddBillingAddress",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation_entity"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/add_billing_address_dto"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/add-vat-registration": {
+      "post": {
+        "operationId": "AddVatRegistration",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation_entity"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/add_vat_registration_dto"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/add-subscription": {
+      "post": {
+        "operationId": "AddProductSubscription",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation_entity"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/add_product_subscription_dto"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/add-payment-method": {
+      "post": {
+        "operationId": "AddPaymentMethod",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/organisation_entity"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/add_payment_method_dto"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/countries": {
+      "get": {
+        "operationId": "ListCountries",
+        "responses": {
+          "200": {
+            "description": "Returns a list of countries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/country_entity"
+                      }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/metadata_object"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/pagination_query_param"
+        }
+      ]
+    },
+    "/countries/{iso_country_code}": {
+      "get": {
+        "operationId": "FindCountryByIsoCode",
+        "responses": {
+          "200": {
+            "description": "Returns a list of countries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/country_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/iso_country_code_path_param"
+        }
+      ]
+    },
+    "/products": {
+      "get": {
+        "operationId": "ListProducts",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/product_entity"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/pagination_query_param"
+        }
+      ]
+    },
+    "/products/{product_id}": {
+      "get": {
+        "operationId": "FindProductById",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/product_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/product_id_path_param"
+        }
+      ]
+    },
+    "/clients": {
+      "post": {
+        "operationId": "CreateClient",
+        "responses": {
+          "201": {
+            "description": "Client is created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/client_entity"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClientDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/authenticate": {
+      "post": {
+        "operationId": "AuthenticateClient",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/client_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/authenticate_client_dto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{client_id}": {
+      "get": {
+        "operationId": "GetClientProfile",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/client_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/client_id_path_param"
+        }
+      ]
+    },
+    "/checkout-sessions/create": {
+      "post": {
+        "operationId": "CreateCheckoutSession",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/create_stripe_checkout_session_dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/session_entity"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/checkout-sessions/{stripe_session_id}": {
+      "get": {
+        "operationId": "FindCheckoutSession",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/session_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/stripe_session_id_path_param"
+        }
+      ]
+    },
+    "/invitations": {
+      "get": {
+        "operationId": "ListInvitations",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/invitation_entity"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/invitation_include_param"
+        }
+      ]
+    },
+    "/invitations/create": {
+      "post": {
+        "operationId": "CreateInvitation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/create_invitation_dto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invitation_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/invitations/{invitation_id}": {
+      "get": {
+        "operationId": "FindInvitation",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invitation_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/invitation_include_param"
+        },
+        {
+          "$ref": "#/components/parameters/invitation_id_path_param"
+        }
+      ]
+    },
+    "/invitations/{invitation_id}/accept": {
+      "post": {
+        "operationId": "AcceptInvitation",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/invitation_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/invitation_id_path_param"
+        }
+      ]
+    },
+    "/invitations/{invitation_id}/delete": {
+      "post": {
+        "operationId": "DeleteInvitation",
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/invitation_id_path_param"
+        }
+      ]
+    },
+    "/members": {
+      "get": {
+        "operationId": "ListMembers",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/member_entity"
+                      }
+                    },
+                    "metadata": {
+                      "$ref": "#/components/schemas/metadata_object"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "metadata"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/member_include_param"
+        },
+        {
+          "$ref": "#/components/parameters/pagination_query_param"
+        }
+      ]
+    },
+    "/members/{membership_id}": {
+      "get": {
+        "operationId": "FindMemberById",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/member_entity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/membership_id_path_param"
+        },
+        {
+          "$ref": "#/components/parameters/member_include_param"
+        }
+      ]
+    },
+    "/members/{membership_id}/change-role": {
+      "post": {
+        "operationId": "ChangeMemberRole",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/member_entity"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_object"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/change_member_role_dto"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/membership_id_path_param"
+        }
+      ]
+    },
+    "/members/{membership_id}/delete": {
+      "post": {
+        "operationId": "DeleteMemberById",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/membership_id_path_param"
+        }
+      ]
+    }
+  }
+}

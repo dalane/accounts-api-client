@@ -5,7 +5,7 @@
  * See https://www.npmjs.com/package/oazapfts
  */
 export const defaults: RequestOpts = {
-    baseUrl: "http://localhost:8001/v1",
+    baseUrl: "http://accounts.api.dalane.cloud/v1",
 };
 export const servers = {
     live: "http://accounts.api.dalane.cloud/v1"
@@ -445,11 +445,19 @@ export type product_entity = {
     prices: price_entity[];
     metadata?: object;
 };
-export type authenticate_client_dto = {
-    client_id: string;
-    secret: string;
-    ip_address: string;
-    user_agent: string;
+export type CreateClientDto = {
+    client_id?: string;
+    identifier: string;
+    is_public: boolean;
+    redirect_uris: string[];
+    backchannel_logout_supported: boolean;
+    backchannel_logout_uri?: string;
+    scopes: string[];
+    audiences: string[];
+    client_type: string;
+    description?: string;
+    user_id?: string;
+    organisation_id?: string;
 };
 export type client_entity = {
     client_id: string;
@@ -467,6 +475,12 @@ export type client_entity = {
     created_at: string;
     updated_at: string;
     version: number;
+};
+export type authenticate_client_dto = {
+    client_id: string;
+    secret: string;
+    ip_address: string;
+    user_agent: string;
 };
 export type create_stripe_checkout_session_dto = {
     organisation_id: string;
@@ -714,6 +728,13 @@ export async function findProductById(productId: string, opts?: RequestOpts) {
     return await _.fetchJson(`/products/${productId}`, {
         ...opts
     }) as product_entity;
+}
+export async function createClient(createClientDto: CreateClientDto, opts?: RequestOpts) {
+    return await _.fetchJson("/clients", _.json({
+        ...opts,
+        method: "POST",
+        body: createClientDto
+    })) as client_entity;
 }
 export async function authenticateClient(authenticateClientDto: authenticate_client_dto, opts?: RequestOpts) {
     return await _.fetchJson("/clients/authenticate", _.json({
