@@ -3,7 +3,7 @@
   "info": {
     "title": "cloud.dalane.api.accounts",
     "description": "An API for Dalane Cloud customer accounts.",
-    "version": "v1-alpha"
+    "version": "v1"
   },
   "servers": [
     {
@@ -362,6 +362,10 @@
               "$ref": "#/components/schemas/services"
             }
           },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time"
@@ -426,6 +430,10 @@
           },
           "tax_id": {
             "type": "string"
+          },
+          "owner_id": {
+            "type": "string",
+            "format": "uuid"
           }
         },
         "required": [
@@ -1278,6 +1286,9 @@
             "type": "string",
             "format": "uuid"
           },
+          "secret": {
+            "type": "string"
+          },
           "identifier": {
             "type": "string"
           },
@@ -1315,6 +1326,10 @@
           },
           "description": {
             "type": "string"
+          },
+          "client_secret_expires_at": {
+            "type": "integer",
+            "minimum": 0
           },
           "user_id": {
             "type": "string",
@@ -1442,6 +1457,11 @@
           "organisation_id": {
             "type": "string",
             "format": "uuid"
+          },
+          "client_secret_expires_at": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
           }
         },
         "required": [
@@ -2352,7 +2372,7 @@
         }
       ]
     },
-    "/clients": {
+    "/clients/create": {
       "post": {
         "operationId": "CreateClient",
         "responses": {
