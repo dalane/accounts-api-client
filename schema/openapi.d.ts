@@ -402,7 +402,6 @@ declare namespace Paths {
     export type RequestBody = Components.Schemas.AddOrganisationDto;
     namespace Responses {
       export type $201 = Components.Schemas.OrganisationEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace AddPaymentMethod {
@@ -421,7 +420,6 @@ declare namespace Paths {
     export type RequestBody = Components.Schemas.CreateServiceDto;
     namespace Responses {
       export type $201 = Components.Schemas.ServiceEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace AddVatRegistration {
@@ -434,21 +432,18 @@ declare namespace Paths {
     export type RequestBody = Components.Schemas.AuthenticateClientDto;
     namespace Responses {
       export type $200 = Components.Schemas.ClientEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace AuthenticateUser {
     export type RequestBody = Components.Schemas.AuthenticateUserDto;
     namespace Responses {
       export type $200 = Components.Schemas.UserEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace ChangeMemberRole {
     export type RequestBody = Components.Schemas.ChangeMemberRoleDto;
     namespace Responses {
       export type $200 = Components.Schemas.MemberEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace ChangeUserPassword {
@@ -461,7 +456,6 @@ declare namespace Paths {
     export type RequestBody = Components.Schemas.CreateBillingPortalSessionDto;
     namespace Responses {
       export type $201 = Components.Schemas.BillingPortalSessionEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace CreateCheckoutSession {
@@ -480,21 +474,18 @@ declare namespace Paths {
     export type RequestBody = Components.Schemas.CreateInvitationDto;
     namespace Responses {
       export type $201 = Components.Schemas.InvitationEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace CreateOrganisationInvitation {
     export type RequestBody = Components.Schemas.CreateOrganisationInvitationDto;
     namespace Responses {
       export type $201 = Components.Schemas.InvitationEntity;
-      export type $422 = Components.Schemas.ErrorObject;
     }
   }
   namespace CreateUser {
     export type RequestBody = Components.Schemas.CreateUserDto;
     namespace Responses {
       export type $201 = Components.Schemas.UserEntity;
-      export type $422 = Components.Responses.ValidationErrorResponse;
     }
   }
   namespace FindCheckoutSession {
@@ -612,7 +603,6 @@ declare namespace Paths {
     export type RequestBody = Components.Schemas.VerifyUserEmailDto;
     namespace Responses {
       export type $200 = Components.Schemas.UserEntity;
-      export type $400 = Components.Schemas.ErrorObject;
     }
   }
 }
@@ -625,7 +615,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.CreateUser.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CreateUser.Responses.$201 | Paths.CreateUser.Responses.$422>
+  ): OperationResponse<Paths.CreateUser.Responses.$201>
   /**
    * AuthenticateUser
    */
@@ -633,7 +623,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.AuthenticateUser.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.AuthenticateUser.Responses.$200 | Paths.AuthenticateUser.Responses.$422>
+  ): OperationResponse<Paths.AuthenticateUser.Responses.$200>
   /**
    * GetUserProfile
    */
@@ -665,7 +655,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.VerifyUserEmail.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.VerifyUserEmail.Responses.$200 | Paths.VerifyUserEmail.Responses.$400>
+  ): OperationResponse<Paths.VerifyUserEmail.Responses.$200>
   /**
    * ListServices
    */
@@ -681,7 +671,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.AddService.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.AddService.Responses.$201 | Paths.AddService.Responses.$422>
+  ): OperationResponse<Paths.AddService.Responses.$201>
   /**
    * FindServiceById
    */
@@ -705,7 +695,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.AddOrganisation.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.AddOrganisation.Responses.$201 | Paths.AddOrganisation.Responses.$422>
+  ): OperationResponse<Paths.AddOrganisation.Responses.$201>
   /**
    * FindOrganisationById
    */
@@ -721,7 +711,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.CreateBillingPortalSession.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CreateBillingPortalSession.Responses.$201 | Paths.CreateBillingPortalSession.Responses.$422>
+  ): OperationResponse<Paths.CreateBillingPortalSession.Responses.$201>
   /**
    * ListOrganisationInvitations
    */
@@ -737,7 +727,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.CreateOrganisationInvitation.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CreateOrganisationInvitation.Responses.$201 | Paths.CreateOrganisationInvitation.Responses.$422>
+  ): OperationResponse<Paths.CreateOrganisationInvitation.Responses.$201>
   /**
    * ListOrganisationMembers
    */
@@ -825,7 +815,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.AuthenticateClient.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.AuthenticateClient.Responses.$200 | Paths.AuthenticateClient.Responses.$422>
+  ): OperationResponse<Paths.AuthenticateClient.Responses.$200>
   /**
    * GetClientProfile
    */
@@ -865,7 +855,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.CreateInvitation.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CreateInvitation.Responses.$201 | Paths.CreateInvitation.Responses.$422>
+  ): OperationResponse<Paths.CreateInvitation.Responses.$201>
   /**
    * FindInvitation
    */
@@ -913,7 +903,7 @@ export interface OperationMethods {
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: Paths.ChangeMemberRole.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.ChangeMemberRole.Responses.$200 | Paths.ChangeMemberRole.Responses.$422>
+  ): OperationResponse<Paths.ChangeMemberRole.Responses.$200>
   /**
    * DeleteMemberById
    */
@@ -935,7 +925,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.CreateUser.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CreateUser.Responses.$201 | Paths.CreateUser.Responses.$422>
+    ): OperationResponse<Paths.CreateUser.Responses.$201>
   }
   ['/users/authenticate']: {
     /**
@@ -945,7 +935,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.AuthenticateUser.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.AuthenticateUser.Responses.$200 | Paths.AuthenticateUser.Responses.$422>
+    ): OperationResponse<Paths.AuthenticateUser.Responses.$200>
   }
   ['/users/{user_id}']: {
     /**
@@ -985,7 +975,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.VerifyUserEmail.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.VerifyUserEmail.Responses.$200 | Paths.VerifyUserEmail.Responses.$400>
+    ): OperationResponse<Paths.VerifyUserEmail.Responses.$200>
   }
   ['/services']: {
     /**
@@ -1005,7 +995,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.AddService.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.AddService.Responses.$201 | Paths.AddService.Responses.$422>
+    ): OperationResponse<Paths.AddService.Responses.$201>
   }
   ['/services/{service_id}']: {
     /**
@@ -1035,7 +1025,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.AddOrganisation.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.AddOrganisation.Responses.$201 | Paths.AddOrganisation.Responses.$422>
+    ): OperationResponse<Paths.AddOrganisation.Responses.$201>
   }
   ['/organisations/{organisation_id}']: {
     /**
@@ -1055,7 +1045,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.CreateBillingPortalSession.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CreateBillingPortalSession.Responses.$201 | Paths.CreateBillingPortalSession.Responses.$422>
+    ): OperationResponse<Paths.CreateBillingPortalSession.Responses.$201>
   }
   ['/organisations/{organisation_id}/invitations']: {
     /**
@@ -1075,7 +1065,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.CreateOrganisationInvitation.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CreateOrganisationInvitation.Responses.$201 | Paths.CreateOrganisationInvitation.Responses.$422>
+    ): OperationResponse<Paths.CreateOrganisationInvitation.Responses.$201>
   }
   ['/organisations/{organisation_id}/members']: {
     /**
@@ -1185,7 +1175,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.AuthenticateClient.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.AuthenticateClient.Responses.$200 | Paths.AuthenticateClient.Responses.$422>
+    ): OperationResponse<Paths.AuthenticateClient.Responses.$200>
   }
   ['/clients/{client_id}']: {
     /**
@@ -1235,7 +1225,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.CreateInvitation.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CreateInvitation.Responses.$201 | Paths.CreateInvitation.Responses.$422>
+    ): OperationResponse<Paths.CreateInvitation.Responses.$201>
   }
   ['/invitations/{invitation_id}']: {
     /**
@@ -1295,7 +1285,7 @@ export interface PathsDictionary {
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: Paths.ChangeMemberRole.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.ChangeMemberRole.Responses.$200 | Paths.ChangeMemberRole.Responses.$422>
+    ): OperationResponse<Paths.ChangeMemberRole.Responses.$200>
   }
   ['/members/{membership_id}/delete']: {
     /**

@@ -1603,9 +1603,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "$ref": "#/components/responses/validation_error_response"
           }
         }
       }
@@ -1620,16 +1617,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/user_entity"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
                 }
               }
             }
@@ -1755,16 +1742,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
-                }
-              }
-            }
           }
         },
         "requestBody": {
@@ -1825,16 +1802,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/service_entity"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "ValidationError",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
                 }
               }
             }
@@ -1929,16 +1896,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
-                }
-              }
-            }
           }
         },
         "requestBody": {
@@ -1996,16 +1953,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/billing_portal_session_entity"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
                 }
               }
             }
@@ -2077,16 +2024,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/invitation_entity"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
                 }
               }
             }
@@ -2411,16 +2348,6 @@
                 }
               }
             }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
-                }
-              }
-            }
           }
         },
         "requestBody": {
@@ -2548,16 +2475,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/invitation_entity"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
                 }
               }
             }
@@ -2702,16 +2619,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/member_entity"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/error_object"
                 }
               }
             }
