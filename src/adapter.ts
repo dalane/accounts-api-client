@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import { Client, Components } from '../schema/openapi';
 export { Components };
 
-export type ProjectsApiClient = Client;
+export type AccountsApiClient = Client;
 
 const readFilePromise = promisify(readFile);
 
@@ -25,7 +25,7 @@ export interface ApiClientSettings {
 	identifier?: string;
 }
 
-export async function createClient(options?: ApiClientSettings): Promise<ProjectsApiClient> {
+export async function createClient(options?: ApiClientSettings): Promise<AccountsApiClient> {
 	const { server, identifier } = options ?? {};
 	// load package.json file and get library version
 	const packageJsonContent = await readFilePromise(packageJsonPath);
@@ -36,7 +36,7 @@ export async function createClient(options?: ApiClientSettings): Promise<Project
 	// create api
 	const api = new OpenAPIClient({ definition: schema, withServer: server ?? 'live' });
 	// initialise and get client
-	const client = await api.getClient<ProjectsApiClient>();
+	const client = await api.getClient<AccountsApiClient>();
 	// set a nice user-agent header for our library
 	client.defaults.headers = {
 		'user-agent': `${name}:${version}${identifier !== undefined ? `;${identifier}` : ''}`

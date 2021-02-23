@@ -1,6 +1,6 @@
 {
   "name": "@dalane/accounts-api-client",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -21,7 +21,7 @@
     "prepare": "npm run build",
     "build-types": "./node_modules/.bin/typegen ./schema/openapi.json > ./schema/openapi.d.ts",
     "prebuild": "rm -rf ./build",
-    "build": "tsc",
+    "build": "npm run build-types && tsc",
     "lint": "eslint \"./src/**/*.ts\""
   },
   "author": "",
