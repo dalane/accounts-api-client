@@ -7,11 +7,22 @@
   },
   "servers": [
     {
-      "url": "http://accounts.api.dalane.cloud/v1",
+      "url": "http: //accounts.api.dalane.cloud/v1",
       "description": "live"
     }
   ],
+  "security": [
+    {
+      "openIdConnect": []
+    }
+  ],
   "components": {
+    "securitySchemes": {
+      "openIdConnect": {
+        "type": "openIdConnect",
+        "openIdConnectUrl": "http: //localhost: 8000/.well-known/openid-configuration"
+      }
+    },
     "parameters": {
       "pagination_query_param": {
         "name": "page",
@@ -133,15 +144,6 @@
           }
         }
       },
-      "service_id_path_param": {
-        "name": "service_id",
-        "in": "path",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "format": "uuid"
-        }
-      },
       "membership_id_path_param": {
         "name": "membership_id",
         "in": "path",
@@ -180,6 +182,22 @@
         "required": true,
         "schema": {
           "type": "string"
+        }
+      },
+      "service_query_param": {
+        "name": "service",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "is_active_query_param": {
+        "name": "is_active",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean"
         }
       },
       "client_id_path_param": {
@@ -279,6 +297,12 @@
           "count",
           "page"
         ]
+      },
+      "OrganisationEntity": {
+        "$ref": "#/components/schemas/organisation_entity"
+      },
+      "AddOrganisationDto": {
+        "$ref": "#/components/schemas/add_organisation_dto"
       },
       "organisation_entity": {
         "type": "object",
@@ -440,6 +464,36 @@
           "name"
         ]
       },
+      "AddressEntity": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "address_line_1": {
+            "type": "string"
+          },
+          "address_line_2": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "postal_code": {
+            "type": "string"
+          },
+          "country_code": {
+            "type": "string",
+            "format": "iso-country-code"
+          }
+        },
+        "required": [
+          "address_line_1",
+          "city",
+          "country_code"
+        ]
+      },
       "add_billing_address_dto": {
         "type": "object",
         "additionalProperties": false,
@@ -480,6 +534,44 @@
         },
         "required": [
           "stripe_checkout_session_id"
+        ]
+      },
+      "AddTrialSubscriptionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "price_id": {
+            "type": "string"
+          },
+          "billing_details": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              },
+              "address": {
+                "$ref": "#/components/schemas/AddressEntity"
+              }
+            },
+            "required": [
+              "name",
+              "email",
+              "address"
+            ]
+          },
+          "trial_period": {
+            "type": "integer"
+          },
+          "promotion_code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "price_id"
         ]
       },
       "add_vat_registration_dto": {
@@ -788,6 +880,59 @@
         },
         "required": [
           "role"
+        ]
+      },
+      "AddPaymentMethodDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "card"
+            ]
+          },
+          "card": {
+            "type": "object",
+            "properties": {
+              "exp_month": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "exp_year": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "number": {
+                "type": "string",
+                "format": "card"
+              },
+              "cvc": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "exp_month",
+              "exp_year",
+              "number",
+              "cvc",
+              "name"
+            ]
+          },
+          "is_default": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "card",
+          "is_default"
         ]
       },
       "user_entity": {
@@ -1227,15 +1372,21 @@
               "$ref": "#/components/schemas/price_entity"
             }
           },
-          "metadata": {
-            "type": "object"
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "service": {
+            "type": "string"
           }
         },
         "required": [
           "product_id",
           "name",
           "is_active",
-          "prices"
+          "prices",
+          "index",
+          "service"
         ]
       },
       "price_entity": {
@@ -1474,56 +1625,6 @@
           "client_type"
         ]
       },
-      "service_entity": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "service_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "version": {
-            "type": "integer",
-            "minimum": 1
-          }
-        },
-        "required": [
-          "service_id",
-          "name",
-          "created_at",
-          "updated_at",
-          "version"
-        ]
-      },
-      "create_service_dto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
       "session_entity": {
         "type": "object",
         "properties": {
@@ -1755,91 +1856,6 @@
         }
       }
     },
-    "/services": {
-      "get": {
-        "operationId": "ListServices",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/service_entity"
-                      }
-                    },
-                    "metadata": {
-                      "$ref": "#/components/schemas/metadata_object"
-                    }
-                  },
-                  "required": [
-                    "data",
-                    "metadata"
-                  ]
-                }
-              }
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/components/parameters/pagination_query_param"
-        }
-      ]
-    },
-    "/services/add": {
-      "post": {
-        "operationId": "AddService",
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/service_entity"
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/create_service_dto"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/services/{service_id}": {
-      "get": {
-        "operationId": "FindServiceById",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/service_entity"
-                }
-              }
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/components/parameters/service_id_path_param"
-        }
-      ]
-    },
     "/organisations": {
       "get": {
         "operationId": "ListOrganisations",
@@ -1929,6 +1945,37 @@
         {
           "$ref": "#/components/parameters/organisation_include_param"
         },
+        {
+          "$ref": "#/components/parameters/organisation_id_path_param"
+        }
+      ]
+    },
+    "/organisations/{organisation_id}/payment-methods/add": {
+      "post": {
+        "operationId": "AddPaymentMethod",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPaymentMethodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created Payment Method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganisationEntity"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
         {
           "$ref": "#/components/parameters/organisation_id_path_param"
         }
@@ -2172,9 +2219,9 @@
         }
       ]
     },
-    "/organisations/{organisation_id}/add-payment-method": {
+    "/organisations/{organisation_id}/subscriptions/add-trial": {
       "post": {
-        "operationId": "AddPaymentMethod",
+        "operationId": "AddTrialSubscription",
         "responses": {
           "200": {
             "description": "OK",
@@ -2191,7 +2238,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/add_payment_method_dto"
+                "$ref": "#/components/schemas/AddTrialSubscriptionDto"
               }
             }
           }
@@ -2284,6 +2331,12 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/pagination_query_param"
+        },
+        {
+          "$ref": "#/components/parameters/service_query_param"
+        },
+        {
+          "$ref": "#/components/parameters/is_active_query_param"
         }
       ]
     },

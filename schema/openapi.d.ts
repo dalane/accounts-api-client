@@ -17,6 +17,9 @@ declare namespace Components {
     namespace InvitationIncludeParam {
       export type Include = "organisation" | "user";
     }
+    namespace IsActiveQueryParam {
+      export type IsActive = boolean;
+    }
     namespace IsoCountryCodePathParam {
       export type IsoCountryCode = string; // iso-country-code
     }
@@ -52,8 +55,8 @@ declare namespace Components {
     namespace ProductIdPathParam {
       export type ProductId = string;
     }
-    namespace ServiceIdPathParam {
-      export type ServiceId = string; // uuid
+    namespace ServiceQueryParam {
+      export type Service = string;
     }
     namespace StripeSessionIdPathParam {
       export type StripeSessionId = string;
@@ -91,15 +94,39 @@ declare namespace Components {
       owner_id?: string; // uuid
     }
     export interface AddPaymentMethodDto {
-      payment_provider: "stripe";
-      payment_provider_ref: string;
+      type: "card";
+      card: {
+        exp_month: number;
+        exp_year: number;
+        number: string; // card
+        cvc: number;
+        name: string;
+      };
       is_default: boolean;
     }
     export interface AddProductSubscriptionDto {
       stripe_checkout_session_id: string;
     }
+    export interface AddTrialSubscriptionDto {
+      price_id: string;
+      billing_details?: {
+        name: string;
+        email: string; // email
+        address: AddressEntity;
+      };
+      trial_period?: number;
+      promotion_code?: string;
+    }
     export interface AddVatRegistrationDto {
       vat_number: string;
+    }
+    export interface AddressEntity {
+      address_line_1: string;
+      address_line_2?: string;
+      city: string;
+      region?: string;
+      postal_code?: string;
+      country_code: string; // iso-country-code
     }
     export interface AuthenticateClientDto {
       client_id: string; // uuid
@@ -194,10 +221,6 @@ declare namespace Components {
       email?: string; // email
       status?: "Created" | "Sent" | "Accepted" | "Deleted" | "Undelivered";
       role: "Administrator" | "Team Member" | "Billing Only";
-    }
-    export interface CreateServiceDto {
-      name: string;
-      description?: string;
     }
     export interface CreateStripeCheckoutSessionDto {
       organisation_id: string; // uuid
@@ -321,16 +344,8 @@ declare namespace Components {
       description?: string;
       is_active: boolean;
       prices: PriceEntity[];
-      metadata?: {
-      };
-    }
-    export interface ServiceEntity {
-      service_id: string; // uuid
-      name: string;
-      description?: string;
-      created_at: string; // date-time
-      updated_at: string; // date-time
-      version: number;
+      index: number;
+      service: string;
     }
     export interface Services {
       service_id: string; // uuid
@@ -407,7 +422,7 @@ declare namespace Paths {
   namespace AddPaymentMethod {
     export type RequestBody = Components.Schemas.AddPaymentMethodDto;
     namespace Responses {
-      export type $200 = Components.Schemas.OrganisationEntity;
+      export type $201 = Components.Schemas.OrganisationEntity;
     }
   }
   namespace AddProductSubscription {
@@ -416,10 +431,10 @@ declare namespace Paths {
       export type $200 = Components.Schemas.OrganisationEntity;
     }
   }
-  namespace AddService {
-    export type RequestBody = Components.Schemas.CreateServiceDto;
+  namespace AddTrialSubscription {
+    export type RequestBody = Components.Schemas.AddTrialSubscriptionDto;
     namespace Responses {
-      export type $201 = Components.Schemas.ServiceEntity;
+      export type $200 = Components.Schemas.OrganisationEntity;
     }
   }
   namespace AddVatRegistration {
@@ -518,11 +533,6 @@ declare namespace Paths {
       export type $200 = Components.Schemas.ProductEntity;
     }
   }
-  namespace FindServiceById {
-    namespace Responses {
-      export type $200 = Components.Schemas.ServiceEntity;
-    }
-  }
   namespace GetClientProfile {
     namespace Responses {
       export type $200 = Components.Schemas.ClientEntity;
@@ -581,14 +591,6 @@ declare namespace Paths {
   namespace ListProducts {
     namespace Responses {
       export type $200 = Components.Schemas.ProductEntity[];
-    }
-  }
-  namespace ListServices {
-    namespace Responses {
-      export interface $200 {
-        data: Components.Schemas.ServiceEntity[];
-        metadata: Components.Schemas.MetadataObject;
-      }
     }
   }
   namespace ListUserMemberships {
@@ -657,30 +659,6 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.VerifyUserEmail.Responses.$200>
   /**
-   * ListServices
-   */
-  'ListServices'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.ListServices.Responses.$200>
-  /**
-   * AddService
-   */
-  'AddService'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.AddService.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.AddService.Responses.$201>
-  /**
-   * FindServiceById
-   */
-  'FindServiceById'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.FindServiceById.Responses.$200>
-  /**
    * ListOrganisations
    */
   'ListOrganisations'(
@@ -704,6 +682,14 @@ export interface OperationMethods {
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.FindOrganisationById.Responses.$200>
+  /**
+   * AddPaymentMethod
+   */
+  'AddPaymentMethod'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.AddPaymentMethod.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.AddPaymentMethod.Responses.$201>
   /**
    * CreateBillingPortalSession
    */
@@ -761,13 +747,13 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.AddProductSubscription.Responses.$200>
   /**
-   * AddPaymentMethod
+   * AddTrialSubscription
    */
-  'AddPaymentMethod'(
+  'AddTrialSubscription'(
     parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.AddPaymentMethod.RequestBody,
+    data?: Paths.AddTrialSubscription.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.AddPaymentMethod.Responses.$200>
+  ): OperationResponse<Paths.AddTrialSubscription.Responses.$200>
   /**
    * ListCountries
    */
@@ -977,36 +963,6 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.VerifyUserEmail.Responses.$200>
   }
-  ['/services']: {
-    /**
-     * ListServices
-     */
-    'get'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.ListServices.Responses.$200>
-  }
-  ['/services/add']: {
-    /**
-     * AddService
-     */
-    'post'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.AddService.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.AddService.Responses.$201>
-  }
-  ['/services/{service_id}']: {
-    /**
-     * FindServiceById
-     */
-    'get'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.FindServiceById.Responses.$200>
-  }
   ['/organisations']: {
     /**
      * ListOrganisations
@@ -1036,6 +992,16 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.FindOrganisationById.Responses.$200>
+  }
+  ['/organisations/{organisation_id}/payment-methods/add']: {
+    /**
+     * AddPaymentMethod
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.AddPaymentMethod.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.AddPaymentMethod.Responses.$201>
   }
   ['/organisations/{organisation_id}/create-billing-portal-session']: {
     /**
@@ -1107,15 +1073,15 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.AddProductSubscription.Responses.$200>
   }
-  ['/organisations/{organisation_id}/add-payment-method']: {
+  ['/organisations/{organisation_id}/subscriptions/add-trial']: {
     /**
-     * AddPaymentMethod
+     * AddTrialSubscription
      */
     'post'(
       parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.AddPaymentMethod.RequestBody,
+      data?: Paths.AddTrialSubscription.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.AddPaymentMethod.Responses.$200>
+    ): OperationResponse<Paths.AddTrialSubscription.Responses.$200>
   }
   ['/countries']: {
     /**
